@@ -1,0 +1,3134 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>EduConnect - Premium Dashboard</title>
+
+
+    <!-- =========================================================
+         FONTES E ÍCONES
+    ========================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+
+    <!-- CSS PRINCIPAL -->
+
+    <link
+        rel="stylesheet"
+        href="teste.css"
+    >
+
+
+    <!-- =========================================================
+         PROTEÇÃO VISUAL DO PAINEL ADMINISTRATIVO
+    ========================================================== -->
+
+    <style>
+
+        /*
+         * O painel administrativo começa sempre escondido.
+         * O teste.js poderá liberá-lo somente após
+         * autenticação administrativa válida.
+         */
+
+        
+/* O painel administrativo fica oculto por padrão. */
+#admView {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* O painel só aparece quando estiver ativo. */
+#admView.admin-view-active {
+    display: block;
+}
+
+        .chat-topbar-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+
+        .chat-conversation-title {
+            color: var(--deep-teal, #0C3846);
+            font-size: 14px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .chat-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted, #4A6B74);
+            font-size: 12px;
+        }
+
+        .chat-status::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #d99b26;
+            display: inline-block;
+        }
+
+        .chat-status.online::before { background: #2ECC71; }
+        .chat-status.offline::before { background: #E74C3C; }
+
+        .chat-tool-btn {
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .chat-tool-btn:hover,
+        .chat-tool-btn:focus-visible {
+            background: var(--frost-white, #E4F4F8);
+            outline: none;
+        }
+
+        @media (max-width: 600px) {
+            .chat-topbar-info { gap: 6px; }
+            .chat-conversation-title { max-width: 55vw; }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     TELA DE AUTENTICAÇÃO
+============================================================= -->
+
+<div
+    class="auth-wrapper"
+    id="authScreen"
+>
+
+    <div class="auth-layout">
+
+
+        <!-- ====================================================
+             LADO ESQUERDO
+        ===================================================== -->
+
+        <div class="welcome-panel">
+
+            <div class="welcome-content">
+
+                <div class="welcome-icon">
+
+                    <i class="fa-solid fa-graduation-cap"></i>
+
+                </div>
+
+                <h1>
+                    Bem-vindo ao EduConnect
+                </h1>
+
+
+                <p>
+                    Conectando você ao conhecimento,
+                    às oportunidades e ao futuro.
+                </p>
+
+
+                <span>
+                    Aprender. Compartilhar. Evoluir.
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ====================================================
+             LADO DIREITO
+        ===================================================== -->
+
+        <div class="auth-panel">
+
+
+            <!-- =================================================
+                 LOGIN
+            ================================================== -->
+
+            <div
+                class="auth-card"
+                id="loginCard"
+            >
+
+                <div class="auth-logo">
+
+                    <i class="fa-solid fa-compass-drafting"></i>
+
+                    EduConnect
+
+                </div>
+
+
+                <div class="auth-subtitle">
+
+                    
+                    Faça login para acessar suas monitorias
+
+                </div>
+
+
+                <form
+                    class="auth-form"
+                    id="loginForm"
+                    onsubmit="handleAuth(event)"
+                >
+
+
+                    <div class="input-group">
+
+                        <label for="loginEmail">
+                            E-mail do Aluno
+                        </label>
+
+
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            name="email"
+                            class="input-field"
+                            placeholder="exemplo@escola.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label for="loginPassword">
+                            Senha
+                        </label>
+
+
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                name="senha"
+                                class="input-field"
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                required
+                            >
+
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="togglePasswordVisibility('loginPassword', this)"
+                                aria-label="Mostrar senha"
+                            >
+
+                                <i class="fa-solid fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="btn-auth"
+                        id="loginButton"
+                    >
+
+                        Entrar no Painel
+
+                    </button>
+
+
+
+                    <!-- MENSAGEM DO LOGIN -->
+
+                    <div
+                        id="loginMessage"
+                        class="auth-message"
+                        aria-live="polite"
+                    ></div>
+
+
+                </form>
+
+
+
+                <div class="auth-switch">
+
+                    Não tem uma conta?
+
+
+                    <a
+                        href="#"
+                        id="showRegister"
+                    >
+
+                        Cadastre-se
+
+                    </a>
+
+                </div>
+
+                <div class="auth-switch auth-admin-switch">
+                    É administrador?
+                    <a href="#" id="showAdminLogin">Entrar no painel administrativo</a>
+                </div>
+
+                <div class="auth-switch auth-teacher-switch">
+                    É professor?
+                    <a href="/professor">Entrar para responder aos alunos</a>
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CADASTRO
+            ================================================== -->
+
+            <div
+                class="auth-card"
+                id="registerCard"
+                style="display: none;"
+            >
+
+                <div class="auth-logo">
+                    <i class="fa-solid fa-compass-drafting"></i>
+                    EduConnect
+                </div>
+
+                <div class="auth-subtitle">
+                    Crie sua conta para acessar as monitorias
+                </div>
+
+                <form
+                    class="auth-form"
+                    id="registerForm"
+                    onsubmit="handleAuth(event)"
+                >
+
+                    <div class="input-group">
+                        <label for="registerName">Nome Completo</label>
+                        <input
+                            type="text"
+                            id="registerName"
+                            name="nome"
+                            class="input-field"
+                            placeholder="Digite seu nome completo"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="registerEmail">E-mail do Aluno</label>
+                        <input
+                            type="email"
+                            id="registerEmail"
+                            name="email"
+                            class="input-field"
+                            placeholder="exemplo@escola.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="registerPassword">Senha</label>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="registerPassword"
+                                name="senha"
+                                class="input-field"
+                                placeholder="Mínimo 6 caracteres"
+                                minlength="6"
+                                autocomplete="new-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="togglePasswordVisibility('registerPassword', this)"
+                                aria-label="Mostrar senha"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn-auth"
+                        id="registerButton"
+                    >
+                        Concluir Cadastro
+                    </button>
+
+                    <div
+                        id="registerMessage"
+                        class="auth-message"
+                        aria-live="polite"
+                    ></div>
+
+                </form>
+
+                <div class="auth-switch">
+                    Já possui cadastro?
+                    <a href="#" id="showLogin">Fazer Login</a>
+                </div>
+
+                <div class="auth-switch auth-admin-switch">
+                    É administrador?
+                    <a href="#" class="showAdminLoginLink">Entrar no painel administrativo</a>
+                </div>
+
+                <div class="auth-switch auth-teacher-switch">
+                    É professor?
+                    <a href="/professor">Entrar para responder aos alunos</a>
+                </div>
+
+            </div>
+
+            <div
+                class="auth-card"
+                id="adminLoginCard"
+                style="display: none;"
+            >
+
+                <div class="auth-logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    EduConnect
+                </div>
+
+                <div class="auth-subtitle">
+                    Acesso restrito à administração da plataforma
+                </div>
+
+                <form
+                    class="auth-form"
+                    id="adminCardLoginForm"
+                    onsubmit="event.preventDefault(); verifyAdminPassword()"
+                >
+
+                    <div class="input-group">
+                        <label for="adminCardEmail">E-mail do administrador</label>
+                        <input
+                            type="email"
+                            id="adminCardEmail"
+                            class="input-field"
+                            placeholder="E-mail administrativo"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="adminCardPassword">Senha do administrador</label>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="adminCardPassword"
+                                class="input-field"
+                                placeholder="Sua senha"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="togglePasswordVisibility('adminCardPassword', this)"
+                                aria-label="Mostrar senha"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        id="adminCardLoginMessage"
+                        class="auth-message"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+
+                    <button
+                        type="submit"
+                        class="btn-auth"
+                        id="adminCardLoginButton"
+                    >
+                        Entrar no painel administrativo
+                    </button>
+
+                </form>
+
+                <div class="auth-switch">
+                    Acesso de aluno?
+                    <a href="#" id="showStudentLogin">Voltar ao login</a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<main id="teacherPortal" class="teacher-portal" style="display: none;">
+    <header class="teacher-portal-header">
+        <div>
+            <strong>EduConnect · Área do Professor</strong>
+            <span id="teacherPortalIdentity">Acesso seguro para professores</span>
+        </div>
+        <button id="teacherLogoutButton" type="button" class="btn-cancel" style="display: none;">Sair</button>
+    </header>
+
+    <section id="teacherLoginPanel" class="teacher-portal-card">
+        <h1>Entrar como professor</h1>
+        <p>Entre para responder às dúvidas dos alunos e publicar materiais.</p>
+        <form id="teacherLoginForm" class="teacher-portal-form teacher-login-form">
+            <div class="teacher-login-field">
+                <label for="teacherLoginEmail">E-mail</label>
+                <input id="teacherLoginEmail" class="input-field" type="email" placeholder="seu.email@exemplo.com" autocomplete="username" required>
+            </div>
+            <div class="teacher-login-field">
+                <label for="teacherLoginPassword">Senha</label>
+                <div class="password-field">
+                    <input id="teacherLoginPassword" class="input-field" type="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('teacherLoginPassword', this)" aria-label="Mostrar senha">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button id="teacherLoginButton" type="submit" class="btn-auth">Entrar</button>
+            <p id="teacherLoginMessage" class="auth-message" role="status" aria-live="polite"></p>
+        </form>
+        <details class="teacher-signup">
+            <summary>Sou professor e quero solicitar acesso</summary>
+            <p>Preencha seus dados. A administração analisará o cadastro antes de liberar o acesso aos alunos.</p>
+            <form id="teacherSignupForm" class="teacher-portal-form">
+                <label for="teacherSignupName">Nome completo</label>
+                <input id="teacherSignupName" class="input-field" type="text" maxlength="150" autocomplete="name" required>
+                <label for="teacherSignupEmail">E-mail</label>
+                <input id="teacherSignupEmail" class="input-field" type="email" maxlength="150" autocomplete="email" required>
+                <label for="teacherSignupSubject">Matéria</label>
+                <input id="teacherSignupSubject" class="input-field" type="text" maxlength="80" required>
+                <label for="teacherSignupPassword">Crie uma senha (mínimo 8 caracteres)</label>
+                <input id="teacherSignupPassword" class="input-field" type="password" minlength="8" autocomplete="new-password" required>
+                <button id="teacherSignupButton" type="submit" class="btn-auth">Enviar solicitação</button>
+                <p id="teacherSignupMessage" class="auth-message" role="status" aria-live="polite"></p>
+            </form>
+        </details>
+    </section>
+
+    <section id="teacherDashboardPanel" class="teacher-portal-card" style="display: none;">
+        <h1>Olá, <span id="teacherDashboardName">professor(a)</span></h1>
+        <p>Publique videoaulas, atividades e sites de apoio para seus alunos.</p>
+        <section class="teacher-chat-panel" aria-labelledby="teacherChatTitle">
+            <div class="teacher-chat-heading">
+                <div>
+                    <h2 id="teacherChatTitle">Dúvidas dos alunos</h2>
+                    <p>Responda às conversas enviadas pelos alunos. As mensagens ficam salvas na plataforma e você recebe um aviso por e-mail quando um aluno entrar em contato.</p>
+                </div>
+                <span id="teacherChatStatus" class="teacher-chat-status" role="status" aria-live="polite">Carregando conversas...</span>
+            </div>
+            <div class="teacher-chat-layout">
+                <div id="teacherChatConversations" class="teacher-chat-conversations" aria-label="Conversas dos alunos" aria-live="polite"></div>
+                <div class="teacher-chat-thread">
+                    <div id="teacherChatMessages" class="teacher-chat-messages" aria-live="polite">
+                        <p class="teacher-chat-empty">Quando um aluno enviar uma dúvida para você, a conversa aparecerá aqui.</p>
+                    </div>
+                    <form id="teacherChatReplyForm" class="teacher-chat-reply-form">
+                        <label class="sr-only" for="teacherChatReplyInput">Escreva sua resposta</label>
+                        <textarea id="teacherChatReplyInput" maxlength="4000" rows="2" placeholder="Escreva sua resposta..." disabled required></textarea>
+                        <button id="teacherChatReplyButton" type="submit" disabled>Enviar resposta</button>
+                    </form>
+                </div>
+            </div>
+            <p id="teacherChatMessage" class="teacher-chat-feedback" role="status" aria-live="polite"></p>
+        </section>
+        <section class="teacher-appointments-panel" aria-labelledby="teacherAppointmentsTitle">
+            <div class="teacher-appointments-heading">
+                <div>
+                    <h2 id="teacherAppointmentsTitle">Agendamentos cancelados</h2>
+                    <p>Atualizações dos horários vinculados à sua conta.</p>
+                </div>
+                <span class="teacher-appointments-note">Atualização automática</span>
+            </div>
+            <div id="teacherCancelledAppointments" class="teacher-cancelled-appointments" aria-live="polite">
+                <p class="teacher-appointments-empty">Carregando cancelamentos...</p>
+            </div>
+        </section>
+        <form id="professorResourceForm" class="resource-form teacher-resource-form">
+            <label>
+                Tipo de material
+                <select id="professorResourceType" class="input-field" required>
+                    <option value="video">Vídeo do YouTube</option>
+                    <option value="atividade">Atividade ou site de apoio</option>
+                </select>
+            </label>
+            <label>
+                Matéria
+                <input id="professorResourceSubject" class="input-field" maxlength="80" placeholder="Definida pela sua conta" required>
+            </label>
+            <label>
+                Título
+                <input id="professorResourceTitle" class="input-field" maxlength="150" required>
+            </label>
+            <label>
+                Link
+                <input id="professorResourceUrl" class="input-field" type="url" maxlength="1000" placeholder="https://..." required>
+            </label>
+            <div class="teacher-resource-audience" id="professorResourceAudienceGroup">
+                <label for="professorResourceAudience">Quem pode ver este vídeo?</label>
+                <select id="professorResourceAudience" class="input-field">
+                    <option value="todos">Todos os alunos</option>
+                    <option value="aluno">Somente um aluno desta conversa</option>
+                </select>
+                <label id="professorResourceStudentGroup" for="professorResourceStudent" hidden>
+                    Aluno que enviou a dúvida
+                    <select id="professorResourceStudent" class="input-field">
+                        <option value="">Selecione uma conversa</option>
+                    </select>
+                </label>
+                <small class="teacher-resource-audience-hint">Vídeos direcionados ficam visíveis apenas para o aluno escolhido. Atividades continuam disponíveis para todos.</small>
+            </div>
+            <label class="resource-description">
+                Orientação para o aluno (opcional)
+                <textarea id="professorResourceDescription" class="input-field" maxlength="1000" rows="3"></textarea>
+            </label>
+            <div class="resource-form-actions">
+                <button id="publishProfessorResourceButton" type="submit" class="btn-confirm">Publicar material</button>
+                <p id="professorResourceMessage" class="auth-message" role="status" aria-live="polite"></p>
+            </div>
+        </form>
+        <h2 class="teacher-resources-heading">Materiais publicados</h2>
+        <div id="teacherPortalResources" class="admin-resources-list" aria-live="polite"></div>
+    </section>
+</main>
+
+<!-- ============================================================
+     SISTEMA PRINCIPAL
+============================================================= -->
+
+<div
+    class="site-container"
+    id="siteContainer"
+    style="display: none;"
+>
+
+
+    <!-- ========================================================
+         HEADER
+    ========================================================= -->
+
+    <header>
+
+        <div
+            class="logo-area"
+            onclick="showView('dashboard')"
+        >
+
+            <button
+                type="button"
+                class="sandwich-btn"
+                id="sandwichBtn"
+                onclick="event.stopPropagation()"
+                aria-label="Abrir menu"
+            >
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <i class="fa-solid fa-compass-drafting"></i>
+
+            EduConnect
+
+        </div>
+
+
+        <div class="header-status">
+
+            <i class="fa-regular fa-clock"></i>
+
+            <span id="headerDate"></span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ========================================================
+         MENU LATERAL
+    ========================================================= -->
+
+    <nav
+        class="nav-sidebar"
+        id="navSidebar"
+        aria-label="Navegação principal"
+    >
+
+        <div class="nav-section">
+            <p class="nav-section-label">Aprendizagem</p>
+            <a
+                href="#"
+                class="nav-link active"
+                id="linkDashboard"
+                aria-current="page"
+                onclick="event.preventDefault(); showView('dashboard')"
+            >
+                <i class="fa-solid fa-table-columns"></i>
+                Central de Estudos
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-section-label">Acompanhamento</p>
+            <a
+                href="#"
+                class="nav-link"
+                id="linkStudentAppointments"
+                onclick="event.preventDefault(); abrirMeusAgendamentos()"
+            >
+                <i class="fa-regular fa-calendar-check"></i>
+                Meus agendamentos
+            </a>
+            <a
+                href="#"
+                class="nav-link"
+                id="linkChat"
+                onclick="event.preventDefault(); showView('chat')"
+            >
+                <i class="fa-regular fa-comments"></i>
+                Tirar dúvidas
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-section-label">EduConnect</p>
+            <a
+                href="#"
+                class="nav-link"
+                id="linkAbout"
+                onclick="event.preventDefault(); showView('about')"
+            >
+                <i class="fa-regular fa-lightbulb"></i>
+                Sobre nós
+            </a>
+        </div>
+
+        <div class="nav-account-actions">
+            <p class="nav-section-label">Conta</p>
+            <a
+                href="#"
+                class="nav-link account-delete-link"
+                onclick="event.preventDefault(); excluirMinhaConta()"
+            >
+                <i class="fa-solid fa-trash-can"></i>
+                Excluir minha conta
+            </a>
+            <a
+                href="#"
+                class="nav-link"
+                id="logoutLink"
+                onclick="event.preventDefault(); logout()"
+            >
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Sair
+            </a>
+        </div>
+
+    </nav>
+
+
+
+    <!-- ========================================================
+         DASHBOARD
+    ========================================================= -->
+
+    <div
+        class="main-container"
+        id="dashboardView"
+    >
+
+        <main class="content-area">
+
+            <div class="dashboard-heading">
+                <h2 class="section-title">Estude por matéria</h2>
+                <p class="dashboard-intro">Acesse atividades e videoaulas recomendadas pela equipe.</p>
+            </div>
+
+
+
+            <div class="subject-grid">
+
+
+                <!-- =================================================
+                     MATEMÁTICA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="matematica">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-calculator"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Matemática
+                            </h3>
+
+                            <p>
+                                Álgebra, Geometria, Trigonometria e Exercícios.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('matematica')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="matematica" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     FÍSICA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="fisica">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-bolt"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Física
+                            </h3>
+
+                            <p>
+                                Movimento, Energia, Gravidade e Mecânica.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('fisica')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="fisica" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     QUÍMICA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="quimica">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-vial"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Química
+                            </h3>
+
+                            <p>
+                                Reações Químicas, Átomos e Tabela Periódica.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('quimica')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="quimica" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PORTUGUÊS
+                ================================================== -->
+
+                <div class="subject-card" data-subject="portugues">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-book"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Português
+                            </h3>
+
+                            <p>
+                                Gramática, Literatura, Interpretação e Redação.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('portugues')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="portugues" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     HISTÓRIA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="historia">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-timeline"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                História
+                            </h3>
+
+                            <p>
+                                Brasil, Mundo, Guerras e Civilizações.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('historia')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="historia" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     GEOGRAFIA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="geografia">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-globe"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Geografia
+                            </h3>
+
+                            <p>
+                                Mapas, Clima, População e Meio Ambiente.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('geografia')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="geografia" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BIOLOGIA
+                ================================================== -->
+
+                <div class="subject-card" data-subject="biologia">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-seedling"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Biologia
+                            </h3>
+
+                            <p>
+                                Corpo Humano, Genética e Ecologia.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('biologia')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="biologia" aria-live="polite"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     INGLÊS
+                ================================================== -->
+
+                <div class="subject-card" data-subject="ingles">
+
+                    <div class="subject-info">
+
+                        <div class="subject-icon">
+
+                            <i class="fa-solid fa-font"></i>
+
+                        </div>
+
+
+                        <div class="subject-text">
+
+                            <h3>
+                                Inglês
+                            </h3>
+
+                            <p>
+                                Vocabulário, Gramática e Conversação.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-actions">
+
+                        <button
+                            type="button"
+                            class="btn-card btn-activity"
+                            onclick="abrirSite('ingles')"
+                        >
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                            Atividades
+
+                        </button>
+
+                    </div>
+
+                    <div class="subject-recommendations" data-subject-resources="ingles" aria-live="polite"></div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+
+        <!-- =====================================================
+             SIDEBAR DO DASHBOARD
+        ====================================================== -->
+
+        <aside class="sidebar-box">
+
+
+            <!-- CALENDÁRIO -->
+
+            <section class="calendar-container" aria-labelledby="calendarSectionTitle">
+                <div class="sidebar-section-heading">
+                    <h3 id="calendarSectionTitle">Agende uma monitoria</h3>
+                    <p>Escolha uma data no calendário.</p>
+                </div>
+
+                <div
+                    class="calendar-header"
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    "
+                >
+
+                    <button
+                        type="button"
+                        id="prevMonthBtn"
+                        onclick="mudarMes(-1)"
+                        aria-label="Mês anterior"
+                        style="
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            color: var(--arctic-blue);
+                        "
+                    >
+
+                        <i class="fa-solid fa-chevron-left"></i>
+
+                    </button>
+
+
+                    <span id="calendarMonthYear"></span>
+
+
+                    <button
+                        type="button"
+                        id="nextMonthBtn"
+                        onclick="mudarMes(1)"
+                        aria-label="Próximo mês"
+
+                     
+                        style="
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            color: var(--arctic-blue);
+                        "
+                    >
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="calendar-grid"
+                    id="calendarGrid"
+                ></div>
+
+            </section>
+
+
+
+            <hr
+                style="
+                    border: 0;
+                    border-top: 1px solid rgba(0,0,0,0.08);
+                    margin: 20px 0;
+                "
+            >
+
+
+
+            <!-- =================================================
+                 MONITORES
+            ================================================== -->
+
+            <div class="monitors-section" aria-labelledby="monitorsSectionTitle">
+
+                <h3
+                    class="section-title"
+                    id="monitorsSectionTitle"
+                    style="
+                        font-size: 16px;
+                        margin-bottom: 12px;
+                    "
+                >
+
+                    Equipe de monitores
+
+                </h3>
+
+
+                <div
+                    class="monitors-list"
+                    id="monitorsList"
+                >
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            AL
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Alessandro
+                            </h4>
+
+                            <p>
+                                Matemática
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            AN
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Angelina
+                            </h4>
+
+                            <p>
+                                Física
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            AC
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Ana Clara
+                            </h4>
+
+                            <p>
+                                Química
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            DG
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Diego
+                            </h4>
+
+                            <p>
+                                Português
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            MN
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Monica
+                            </h4>
+
+                            <p>
+                                História
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            HL
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Helena
+                            </h4>
+
+                            <p>
+                                Geografia
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            CA
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Camila
+                            </h4>
+
+                            <p>
+                                Biologia
+                            </p>
+
+                            
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitor-row">
+
+                        <div class="monitor-avatar">
+                            RF
+                        </div>
+
+                        <div class="monitor-info">
+
+                            <h4>
+                                Rafaela
+                            </h4>
+
+                            <p>
+                                Inglês
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+
+    <!-- ========================================================
+         SOBRE NÓS
+    ========================================================= -->
+
+    <div
+        class="about-view"
+        id="aboutView"
+    >
+
+        <h2 class="about-title-standalone">
+
+            Sobre a Nossa Instituição
+
+        </h2>
+
+
+        <div class="tech-rows-list">
+
+
+            <div class="tech-row-item">
+
+                <div class="tech-left-content">
+
+                    <div class="tech-meta">
+                        Diretriz de Suporte
+                    </div>
+
+                    <h3>
+                        Missão
+                    </h3>
+
+                    <p>
+                        Oferecer uma monitoria altamente colaborativa e dinâmica,
+                        conectando estudantes a monitores aptos a simplificar o
+                        aprendizado e alavancar sua performance acadêmica diária.
+                    </p>
+
+                </div>
+
+
+                <div class="tech-right-polygon">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=80"
+                        alt="Estudantes colaborando"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="tech-row-item">
+
+                <div class="tech-left-content">
+
+                    <div class="tech-meta">
+                        Metas e Horizontes
+                    </div>
+
+                    <h3>
+                        Visão
+                    </h3>
+
+                    <p>
+                        Consolidar-se como a principal plataforma digital de
+                        auxílio e reforço educacional, reconhecida pela inovação
+                        constante e excelência metodológica de ensino técnico.
+                    </p>
+
+                </div>
+
+
+                <div class="tech-right-polygon">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80"
+                        alt="Tecnologia e educação"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="tech-row-item">
+
+                <div class="tech-left-content">
+
+                    <div class="tech-meta">
+                        Cultura Acadêmica
+                    </div>
+
+                    <h3>
+                        Valores
+                    </h3>
+
+                    <p>
+                        Nossa conduta apoia-se firmemente na ética transparente,
+                        no compromisso técnico com o progresso individual,
+                        inclusão ativa e colaboração integradora entre estudantes.
+                    </p>
+
+                </div>
+
+
+                <div class="tech-right-polygon">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=500&q=80"
+                        alt="Equipe trabalhando"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================================================
+         CHAT / EDUASSIST
+    ========================================================= -->
+
+    <div
+        class="chat-view"
+        id="chatView"
+    >
+
+
+        <!-- =====================================================
+             SIDEBAR DO CHAT
+        ====================================================== -->
+
+        <aside class="blueassist-sidebar">
+
+
+            <div>
+
+
+                <div class="blueassist-brand">
+
+                    <i class="ph ph-graduation-cap"></i>
+
+                    EduConnect
+
+                </div>
+
+
+                <div class="blueassist-assistant-title">
+                    Atendimento escolar
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-new-chat"
+                    id="newChatButton"
+                >
+
+                    <i class="ph ph-plus"></i>
+
+                    Novo chat
+
+                </button>
+
+
+
+                <div class="search-box">
+
+                    <i class="ph ph-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="chatSearchInput"
+                        placeholder="Buscar dúvidas..."
+                    >
+
+                </div>
+
+
+
+                <div class="menu-group">
+
+
+                    <div class="menu-item">
+
+                        <i class="ph ph-compass"></i>
+
+                        Explorar
+
+                    </div>
+
+
+                    <div class="menu-item">
+
+                        <i class="ph ph-bookmark-simple"></i>
+
+                        Biblioteca
+
+                    </div>
+
+
+                    <div class="menu-item">
+
+                        <i class="ph ph-folder"></i>
+
+                        Arquivos
+
+                    </div>
+
+
+                    <div class="menu-item">
+
+                        <i class="ph ph-clock"></i>
+
+                        Histórico
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="history-section">
+
+                    <h4>
+
+
+                        
+                        Hoje
+                    </h4>
+
+
+                    <div
+                        class="history-item"
+                        data-chat="equacao"
+                    >
+
+                        Resolução de Equação 2º Grau
+
+                    </div>
+
+
+                    <div
+                        class="history-item"
+                        data-chat="newton"
+                    >
+
+                        Dúvida sobre Leis de Newton
+
+                    </div>
+
+
+                    <h4>
+                        Anteriores
+                    </h4>
+
+
+                    <div
+                        class="history-item"
+                        data-chat="sintaxe"
+                    >
+
+                        Sintaxe e Gramática Básica
+
+                    </div>
+
+
+                    <div
+                        class="history-item"
+                        data-chat="quimica"
+                    >
+
+                        Tabela Periódica: Metais
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 USUÁRIO LOGADO
+            ================================================== -->
+
+            <div class="user-profile">
+
+
+                <div class="user-info">
+
+
+                    <div
+                        class="avatar"
+                        id="chatUserAvatar"
+                    >
+
+                        AL
+
+                    </div>
+
+
+                    <div class="user-details">
+
+
+                        <p id="chatUserName">
+                            Aluno(a)
+                        </p>
+
+
+                        <span id="chatUserEmail">
+                            aluno@email.com
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <i
+                    class="ph ph-sign-out"
+                    style="
+                        color: var(--text-muted);
+                        cursor: pointer;
+                    "
+                    onclick="logout()"
+                    title="Sair"
+                ></i>
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- =====================================================
+             ÁREA PRINCIPAL DO CHAT
+        ====================================================== -->
+
+        <main class="blueassist-main">
+
+
+            <div class="blueassist-top-bar">
+
+                <div class="chat-topbar-info">
+                    <span id="chatConversationTitle" class="chat-conversation-title">
+                        Novo chat
+                    </span>
+                    <span id="chatStatus" class="chat-status conectando" role="status" aria-live="polite">
+                        Conectando...
+                    </span>
+                </div>
+
+            </div>
+
+
+
+            <div class="blueassist-container">
+
+
+                <div class="hero-icon">
+
+                    <i class="ph ph-sparkle"></i>
+
+                </div>
+
+
+                <div class="greeting">
+
+
+                    <h3>
+                        Olá, estudante!
+                    </h3>
+
+
+                    <h1>
+                        Como posso te ajudar hoje?
+                    </h1>
+
+                </div>
+
+                <section class="chat-mode-panel" aria-label="Escolha com quem tirar dúvidas">
+                    <div class="chat-mode-heading">
+                        <strong>Com quem você quer conversar?</strong>
+                        <span id="chatModeDescription">A EduAssist responde na hora.</span>
+                    </div>
+                    <div class="chat-mode-options" role="group" aria-label="Tipo de atendimento">
+                        <button type="button" class="chat-mode-option is-active" id="chatModeAI" aria-pressed="true">
+                            <i class="ph ph-sparkle" aria-hidden="true"></i>
+                            <span>EduAssist IA</span>
+                        </button>
+                        <button type="button" class="chat-mode-option" id="chatModeTeacher" aria-pressed="false">
+                            <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+                            <span>Falar com professor</span>
+                        </button>
+                    </div>
+                    <label class="chat-teacher-choice" id="chatTeacherChoice" hidden>
+                        <span>Escolha o professor</span>
+                        <select id="chatTeacherSelect" aria-label="Professor para conversar">
+                            <option value="">Carregando professores...</option>
+                        </select>
+                    </label>
+                </section>
+
+
+                <!-- =================================================
+                     INPUT DO CHAT
+                ================================================== -->
+
+                <div class="blueassist-input-box">
+
+
+                    <input
+                        type="text"
+                        id="chatInput"
+                        placeholder="Pergunte qualquer dúvida sobre as matérias..."
+                        autocomplete="off"
+                    >
+
+
+                    <div class="input-actions">
+
+
+                        <button
+                            type="button"
+                            class="badge-btn"
+                            id="deepSearchButton"
+                        >
+
+                            <i class="ph ph-atom"></i>
+
+                            Pesquisa Aprofundada
+
+                        </button>
+
+
+                        <div class="send-icons">
+
+
+                            
+                            <button
+                                type="button"
+                                class="chat-tool-btn"
+                                id="chatSettingsButton"
+                                title="Configurações"
+                                aria-label="Configurações do chat"
+                            >
+                                <i class="ph ph-sliders-horizontal" aria-hidden="true"></i>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="chat-tool-btn"
+                                id="chatWebButton"
+                                title="Pesquisa na web"
+                                aria-label="Pesquisa na web"
+                            >
+                                <i class="ph ph-globe" aria-hidden="true"></i>
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="send-btn"
+                                id="sendChatButton"
+                                title="Enviar mensagem"
+                            >
+
+                                <i class="ph ph-paper-plane-right-fill"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     RESPOSTAS DO ASSISTENTE
+                ================================================== -->
+
+                <div
+                    id="chatMessages"
+                    class="chat-messages"
+                ></div>
+
+
+
+                <!-- =================================================
+                     SUGESTÕES
+                ================================================== -->
+
+                <div class="cards-grid">
+
+
+                    <div
+                        class="card-item"
+                        data-prompt="Explique o Teorema de Pitágoras com exemplos práticos."
+                    >
+
+                        <i class="ph ph-device-tablet"></i>
+
+                        <h4>
+                            Sintetizar Fórmula
+                        </h4>
+
+                        <p>
+                            Explicar o Teorema de Pitágoras com exemplos práticos.
+                        </p>
+
+                    </div>
+
+
+
+                    <div
+                        class="card-item"
+                        data-prompt="Gere 3 argumentos sobre sustentabilidade e meio ambiente."
+                    >
+
+                        <i class="ph ph-lightbulb"></i>
+
+                        <h4>
+                            Ideias de Redação
+                        </h4>
+
+                        <p>
+                            Gerar 3 argumentos sobre sustentabilidade e meio ambiente.
+                        </p>
+
+                    </div>
+
+
+
+                    <div
+                        class="card-item"
+                        data-prompt="Explique a diferença entre reações endotérmicas e exotérmicas."
+                    >
+
+                        <i class="ph ph-flask"></i>
+
+                        <h4>
+                            Checar Fatos
+                        </h4>
+
+                        <p>
+                            Diferença entre reações endotérmicas e exotérmicas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="blueassist-footer-text">
+
+                Participe da comunidade de monitores
+
+
+                <a
+                    href="#"
+                    id="discordLink"
+                >
+
+                    Entrar no Discord
+
+                </a>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    </div>
+
+
+
+    <!-- ========================================================
+         PAINEL ADMINISTRATIVO
+    ========================================================= -->
+
+    <!--
+         IMPORTANTE:
+         O painel começa escondido.
+         O teste.js só deve liberá-lo após login administrativo.
+    -->
+
+    <div
+        class="adm-view"
+        id="admView"
+        style="display: none !important;"
+    >
+
+
+        <!-- ====================================================
+             CABEÇALHO DO PAINEL
+        ===================================================== -->
+
+        <div class="admin-dashboard-header">
+
+            <div>
+
+                <span class="admin-dashboard-eyebrow">CENTRAL DE CONTROLE · EDUCONNECT</span>
+                <h2 class="section-title">
+                    Olá, <span id="adminDashboardName">Administrador</span>
+                </h2>
+
+                <p class="admin-subtitle">
+                    Acompanhe o crescimento e a operação da sua plataforma em um só lugar.
+                </p>
+
+            </div>
+
+            <div class="admin-header-tools">
+                <span id="adminLiveStatus" class="admin-live-status is-connecting">
+                    <span></span>
+                    Conectando...
+                </span>
+                <span id="adminLastUpdated" class="admin-last-updated">Aguardando dados</span>
+                <span class="admin-date">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="adminCurrentDate">Carregando data...</span>
+                </span>
+                <button type="button" class="admin-refresh-button" onclick="atualizarPainelAdminAgora()" aria-label="Atualizar dados">
+                    <i class="fa-solid fa-rotate"></i>
+                    Atualizar
+                </button>
+                <button type="button" class="admin-logout-top" onclick="logoutAdmin()" aria-label="Sair do painel">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Sair
+                </button>
+            </div>
+
+        </div>
+
+        <nav class="admin-shortcuts" aria-label="Atalhos administrativos">
+            <a href="#adminMetrics"><i class="fa-solid fa-chart-pie"></i> Visão geral</a>
+            <a href="#adminOperations"><i class="fa-solid fa-users-gear"></i> Pessoas</a>
+            <a href="#adminAppointments"><i class="fa-regular fa-calendar-check"></i> Monitorias</a>
+            <a href="#adminMaterials"><i class="fa-solid fa-book-open"></i> Materiais</a>
+        </nav>
+
+        <section class="admin-panel-card resource-management" id="adminMaterials">
+            <div class="section-header-row admin-resource-heading">
+                <span class="admin-resource-icon" aria-hidden="true">
+                    <i class="fa-solid fa-book-open"></i>
+                </span>
+                <div>
+                    <h3 class="section-subtitle">Materiais para os alunos</h3>
+                    <p class="section-helper">Cadastre videoaulas selecionadas e sites de apoio para os alunos.</p>
+                </div>
+            </div>
+            <form id="resourceForm" class="resource-form">
+                <label>
+                    Tipo de material
+                    <select id="resourceType" class="input-field" required>
+                        <option value="video">Vídeo do YouTube</option>
+                        <option value="atividade">Atividade ou site de apoio</option>
+                    </select>
+                </label>
+                <label>
+                    Matéria
+                    <input id="resourceSubject" class="input-field" maxlength="80" placeholder="Ex.: Matemática" required>
+                </label>
+                <label>
+                    Título
+                    <input id="resourceTitle" class="input-field" maxlength="150" placeholder="Ex.: Funções do 1º grau" required>
+                </label>
+                <label>
+                    Link
+                    <input id="resourceUrl" class="input-field" type="url" maxlength="1000" placeholder="https://..." required>
+                </label>
+                <label>
+                    Indicado por (professor/monitor)
+                    <input id="resourceTeacher" class="input-field" maxlength="150" placeholder="Nome do professor ou monitor" required>
+                </label>
+                <label class="resource-description">
+                    Orientação para o aluno (opcional)
+                    <textarea id="resourceDescription" class="input-field" maxlength="1000" rows="3" placeholder="Explique como este material pode ajudar."></textarea>
+                </label>
+                <div class="resource-form-actions">
+                    <button type="submit" class="btn-confirm" id="saveResourceButton">Publicar material</button>
+                    <p id="resourceFormMessage" class="auth-message" role="status" aria-live="polite"></p>
+                </div>
+            </form>
+            <div id="adminResourcesList" class="admin-resources-list" aria-live="polite"></div>
+        </section>
+
+        <section class="admin-panel-card resource-management">
+            <div class="section-header-row admin-resource-heading">
+                <span class="admin-resource-icon" aria-hidden="true">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </span>
+                <div>
+                    <h3 class="section-subtitle">Contas de professores</h3>
+                    <p class="section-helper">Gerencie os acessos dos professores ao chat e à área segura <code>/professor</code>.</p>
+                </div>
+            </div>
+            <div class="teacher-requests-heading">
+                <h4>Solicitações aguardando aprovação</h4>
+                <button id="refreshTeacherRequestsButton" type="button" class="btn-cancel">Atualizar</button>
+            </div>
+            <div id="adminTeacherRequests" class="admin-resources-list" aria-live="polite"></div>
+            <p id="adminTeacherRequestsMessage" class="auth-message" role="status" aria-live="polite"></p>
+            <form id="teacherAccountForm" class="resource-form">
+                <label>
+                    Nome completo
+                    <input id="teacherAccountName" class="input-field" maxlength="150" required>
+                </label>
+                <label>
+                    E-mail
+                    <input id="teacherAccountEmail" class="input-field" type="email" maxlength="150" required>
+                </label>
+                <label>
+                    Matéria
+                    <input id="teacherAccountSubject" class="input-field" maxlength="80" required>
+                </label>
+                <label>
+                    Senha inicial (mínimo 8 caracteres)
+                    <input id="teacherAccountPassword" class="input-field" type="password" minlength="8" autocomplete="new-password" required>
+                </label>
+                <div class="resource-form-actions">
+                    <button id="createTeacherAccountButton" type="submit" class="btn-confirm">Criar conta</button>
+                    <p id="teacherAccountMessage" class="auth-message" role="status" aria-live="polite"></p>
+                </div>
+            </form>
+            <div id="adminTeachersList" class="admin-resources-list" aria-live="polite"></div>
+        </section>
+
+
+
+        <!-- ====================================================
+             MÉTRICAS
+        ===================================================== -->
+
+        <div class="metrics-grid" id="adminMetrics">
+
+
+            <div class="metric-card">
+
+
+               
+                <div class="metric-top">
+
+                    <span>
+                        Alunos cadastrados
+                    </span>
+
+                    <i
+                        class="fa-solid fa-users"
+                        style="color: var(--arctic-blue);"
+                    ></i>
+
+                </div>
+
+
+                <div
+                    class="metric-value"
+                    id="totalUsuarios"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Monitores cadastrados
+                    </span>
+
+                    <i
+                        class="fa-solid fa-user-tie"
+                        style="color: var(--arctic-blue);"
+                    ></i>
+
+                </div>
+
+
+                <div
+                    class="metric-value"
+                    id="totalMonitores"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <span>
+                        Monitorias agendadas
+                    </span>
+
+                    <i
+                        class="fa-regular fa-calendar-check"
+                        style="color: var(--arctic-blue);"
+                    ></i>
+
+                </div>
+
+
+                <div
+                    class="metric-value"
+                    id="countAgendamentos"
+                >
+                    0
+                </div>
+
+            </div>
+
+            <div class="metric-card admin-metric-warning">
+                <div class="metric-top">
+                    <span>Monitorias pendentes</span>
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+                <div class="metric-value" id="adminPendingAppointments">0</div>
+                <small>Precisam de acompanhamento</small>
+            </div>
+
+        </div>
+
+
+        <div class="admin-operations-grid" id="adminOperations">
+            <section class="admin-panel-card admin-data-card">
+                <div class="section-header-row">
+                    <div>
+                        <h3 class="section-subtitle"><i class="fa-solid fa-user-graduate"></i> Alunos cadastrados</h3>
+                        <p class="section-helper">Lista dos alunos registrados na plataforma.</p>
+                    </div>
+                    <button type="button" class="admin-small-button" onclick="carregarDadosAdmin()" aria-label="Atualizar alunos"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <label class="admin-search-field">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="adminStudentSearch" type="search" placeholder="Buscar por nome ou e-mail" oninput="filtrarTabelaAdmin('adminStudentsTable', this.value)">
+                </label>
+                <div class="admin-table-scroll">
+                    <table class="admin-data-table">
+                        <thead><tr><th>Aluno</th><th>E-mail</th></tr></thead>
+                        <tbody id="adminStudentsTable"><tr><td colspan="2">Carregando alunos...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-panel-card admin-data-card">
+                <div class="section-header-row">
+                    <div>
+                        <h3 class="section-subtitle"><i class="fa-solid fa-chalkboard-user"></i> Equipe de monitores</h3>
+                        <p class="section-helper">Cadastre, consulte e ative ou desative monitores.</p>
+                    </div>
+                    <button type="button" class="admin-small-button" onclick="carregarDadosAdmin()" aria-label="Atualizar monitores"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <form id="adminMonitorForm" class="admin-monitor-form">
+                    <input id="adminMonitorName" class="input-field" maxlength="150" placeholder="Nome do monitor" required>
+                    <input id="adminMonitorSubject" class="input-field" maxlength="100" placeholder="Matéria" required>
+                    <input id="adminMonitorEmail" class="input-field" type="email" maxlength="150" placeholder="E-mail (opcional)">
+                    <button class="admin-access-submit" type="submit"><i class="fa-solid fa-plus"></i> Cadastrar</button>
+                    <p id="adminMonitorMessage" class="auth-message" role="status" aria-live="polite"></p>
+                </form>
+                <div class="admin-table-scroll">
+                    <table class="admin-data-table">
+                        <thead><tr><th>Monitor</th><th>Matéria</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="adminMonitorsTable"><tr><td colspan="4">Carregando monitores...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+
+        <!-- ====================================================
+             GRÁFICOS
+        ===================================================== -->
+
+        <div class="admin-charts-grid">
+
+
+            <!-- AGENDAMENTOS POR MÊS -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <div>
+
+                        <h3>
+                            Agendamentos por mês
+                        </h3>
+
+                        <p>
+                            Acompanhe o volume de monitorias.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="monthly-chart">
+
+                    <div class="monthly-chart-bars" id="adminMonthlyChartBars" style="display:none;"></div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MATÉRIAS MAIS PROCURADAS -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <div>
+
+                        <h3>
+                            Uso do chat hoje
+                        </h3>
+
+                        <p>
+                            Indicadores de utilização da EduAssist.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chat-usage-grid" id="adminChatUsage" aria-live="polite">
+                    <p class="chat-usage-loading">Carregando indicadores...</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ====================================================
+             ÚLTIMAS MONITORIAS
+        ===================================================== -->
+
+        <section class="table-card admin-panel-card" id="adminAppointments">
+
+            <div class="section-header-row">
+
+                <div>
+
+                    <h3 class="section-subtitle">
+
+                        Últimas monitorias
+
+                    </h3>
+
+
+                    <p class="section-helper">
+
+                        Confira os agendamentos mais recentes.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <table class="custom-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Aluno</th>
+                        <th>E-mail</th>
+                        <th>Monitor</th>
+                        <th>Matéria</th>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="tableAgendamentos"
+                >
+
+                    <tr>
+
+                        <td colspan="8">
+                            Carregando agendamentos...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+
+        <!-- ====================================================
+             SAIR DO ADMIN
+        ===================================================== -->
+
+        <div class="admin-logout-container">
+
+            <button
+                type="button"
+                class="btn-cancel"
+                onclick="logoutAdmin()"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Sair do Painel Administrativo
+
+            </button>
+
+        </div>
+    </div>
+    </div>
+
+
+
+
+<!-- ============================================================
+     ALERTA
+============================================================= -->
+
+<div
+    class="alert-toast"
+    id="alertToast"
+    role="alert"
+>
+
+
+    <i
+        class="fa-solid fa-triangle-exclamation"
+        style="
+            color: var(--danger);
+            font-size: 20px;
+        "
+    ></i>
+
+
+    <div>
+
+        <h4
+            style="
+                font-size: 14px;
+                font-weight: 600;
+            "
+        >
+
+            Data Indisponível
+
+        </h4>
+
+
+        <p
+            style="
+                color: var(--text-muted);
+                font-size: 12px;
+            "
+        >
+
+            Escolha outro dia.
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     AGENDAMENTOS DO ALUNO
+============================================================= -->
+<div class="modal" id="studentAppointmentsModal" aria-hidden="true">
+    <section
+        class="modal-content student-appointments-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="studentAppointmentsTitle"
+    >
+        <header class="student-appointments-header">
+            <div>
+                <span class="schedule-kicker">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    Área do aluno
+                </span>
+                <h2 id="studentAppointmentsTitle">Meus agendamentos</h2>
+                <p>Consulte suas monitorias e cancele um horário futuro quando precisar.</p>
+            </div>
+            <button
+                type="button"
+                class="modal-close"
+                onclick="fecharMeusAgendamentos()"
+                aria-label="Fechar meus agendamentos"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+        <div id="studentAppointmentsList" class="student-appointments-list" aria-live="polite">
+            <div class="student-appointments-message">
+                Carregando seus agendamentos...
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+<!-- ============================================================
+     MODAL DE AGENDAMENTO
+============================================================= -->
+
+<div
+    class="modal"
+    id="scheduleModal"
+>
+
+    <div class="modal-content schedule-modal-content">
+
+
+        <div class="schedule-modal-header">
+
+            <div>
+
+                <span class="schedule-kicker">
+
+                    <i class="fa-regular fa-calendar-check"></i>
+
+                    Agendamento de monitoria
+
+                </span>
+
+
+                <h3>
+                    Escolha professor e horário
+                </h3>
+
+
+                <p>
+
+                    Selecione o professor e depois o horário.
+                    Se o horário estiver ocupado, ele será sinalizado,
+                    mas continuará disponível para agendamento.
+
+
+                    
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeModal()"
+                aria-label="Fechar"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+
+        <div class="selected-date schedule-selected-date">
+
+            <div class="selected-date-icon">
+
+                <i class="fa-regular fa-calendar"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Data escolhida
+                </span>
+
+
+                <strong>
+
+                    <span id="selectedDayText">
+                        --
+                    </span>
+
+                    <span id="selectedMonthText">
+                        --
+                    </span>
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="schedule-body-grid">
+
+        <!-- PROFESSOR -->
+
+        <div class="schedule-step">
+
+            <div class="schedule-step-title">
+
+                <span class="step-number">
+                    1
+                </span>
+
+
+                <div>
+
+                    <h4>
+                        Escolha o professor
+                    </h4>
+
+                    <small>
+                        Selecione quem fará a monitoria.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="monitorCards"
+                class="monitor-cards"
+            >
+
+                <div class="schedule-loading">
+                    Carregando professores...
+                </div>
+
+            </div>
+
+
+            <select
+                id="monitorSelect"
+                class="schedule-hidden-select"
+                aria-hidden="true"
+                tabindex="-1"
+                required
+            >
+
+                <option value="">
+                    Selecione um professor
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- HORÁRIO -->
+
+        <div class="schedule-step">
+
+            <div class="schedule-step-title">
+
+                <span class="step-number">
+                    2
+                </span>
+
+
+                <div>
+
+                    <h4>
+                        Escolha o horário
+                    </h4>
+
+                    <small>
+                        Horários ocupados continuam disponíveis.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="timeSlots"
+                class="time-slots"
+            ></div>
+
+
+            <select
+                id="scheduleTime"
+                class="schedule-hidden-select"
+                aria-hidden="true"
+                tabindex="-1"
+                required
+            >
+
+                <option value="">
+                    Selecione um horário
+                </option>
+
+                <option value="08:00">
+                    08:00
+                </option>
+
+                <option value="09:00">
+                    09:00
+                </option>
+
+                <option value="10:00">
+                    10:00
+                </option>
+
+                <option value="11:00">
+                    11:00
+                </option>
+
+                <option value="13:00">
+                    13:00
+                </option>
+
+                <option value="14:00">
+                    14:00
+                </option>
+
+                <option value="15:00">
+                    15:00
+                </option>
+
+                <option value="16:00">
+                    16:00
+                </option>
+
+                <option value="17:00">
+                    17:00
+                </option>
+
+            </select>
+
+
+            <div
+                id="occupiedScheduleWarning"
+                class="occupied-schedule-warning"
+                hidden
+            >
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+
+                
+                <div>
+
+                    <strong>
+                        Esse horário já está ocupado
+                    </strong>
+
+                    <span>
+                        Você ainda pode agendar com este mesmo professor e horário.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        </div>
+
+
+
+        <div
+            class="schedule-summary"
+            id="scheduleSummary"
+        >
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            <span>
+                Selecione um professor e um horário para continuar.
+            </span>
+
+        </div>
+
+
+
+        <div class="modal-actions schedule-actions">
+
+            <button
+                type="button"
+                class="btn-cancel"
+                onclick="closeModal()"
+            >
+
+                Cancelar
+
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-confirm"
+                onclick="confirmAppointment()"
+                id="confirmAppointmentButton"
+            >
+
+                Confirmar Horário
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ============================================================
+     MODAL DE LOGIN DO ADMINISTRADOR
+============================================================= -->
+
+<div
+    class="modal"
+    id="adminAuthModal"
+>
+
+
+    <div class="modal-content">
+
+
+        <h3
+            style="
+                color: var(--deep-teal);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            "
+        >
+
+            <i
+                class="fa-solid fa-lock"
+                style="color: var(--arctic-blue);"
+            ></i>
+
+            Acesso Restrito
+
+        </h3>
+
+
+
+        <p
+            style="
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-top: 4px;
+            "
+        >
+
+            Insira o e-mail e a senha do administrador
+            para continuar.
+
+        </p>
+
+
+
+        <!-- E-MAIL -->
+
+        <div class="form-group">
+
+            <label for="adminEmailInput">
+
+                E-mail do administrador
+
+            </label>
+
+
+            <input
+                type="email"
+                id="adminEmailInput"
+                placeholder="E-mail do administrador"
+                class="input-field"
+                autocomplete="username"
+                required
+            >
+
+        </div>
+
+
+
+        <!-- SENHA -->
+
+        <div class="form-group">
+
+            <label for="adminPasswordInput">
+
+                Senha do administrador
+
+            </label>
+
+
+            <input
+                type="password"
+                id="adminPasswordInput"
+                placeholder="Senha do administrador"
+                class="input-field"
+                autocomplete="current-password"
+                required
+            >
+
+        </div>
+
+
+
+        <div
+            id="adminLoginMessage"
+            class="auth-message"
+            aria-live="polite"
+        ></div>
+
+
+
+        <!-- BOTÕES -->
+
+        <div class="modal-actions">
+
+
+            <button
+                type="button"
+                class="btn-cancel"
+                onclick="closeAdminModal()"
+            >
+
+                Cancelar
+
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-confirm"
+                onclick="verifyAdminPassword()"
+                id="adminLoginButton"
+            >
+
+                Acessar
+
+            </button>
+
+        </div>
+
+
+        
+    </div>
+
+</div>
+
+
+
+<!-- ============================================================
+     SOCKET.IO
+============================================================= -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+
+
+<!-- ============================================================
+     JAVASCRIPT PRINCIPAL
+============================================================= -->
+
+<script src="teste.js"></script>
+
+
+</body>
+
+</html>
